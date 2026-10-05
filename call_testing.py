@@ -1,21 +1,26 @@
 from openai import OpenAI
 from dotenv import load_dotenv
-import os
+import os, time
 
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
 
-first = client.responses.create(
+start = time.perf_counter()
+response = client.responses.create(
     model = "gpt-6-luna",
-    input = "My preferred database is PostgreSQL")
-
-print(first.output_text)
-
-second = client.responses.create(
-    model="gpt-6-luna",
-    previous_response_id = first.id,
-    input="What is my preferred database?"
+    instructions = "Explain briefly to a backend developer.",
+    input = "What problem does Redis solve?"
 )
 
-print(second.output_text)
+end = time.perf_counter()
+
+latency = end - start
+
+print(response.output_text)
+
+print("\n--- METRICS ---")
+print("Input Tokens:- ", response.usage.input_tokens)
+print("Output tokens:", response.usage.output_tokens)
+print("Total tokens:", response.usage.total_tokens)
+print("Latency:", round(latency, 2), "seconds")
